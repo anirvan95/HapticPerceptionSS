@@ -1,23 +1,50 @@
 # HapticPerceptionSS
 
-Code base for Haptic Perception Workshop
+Code base for the Haptic Perception Workshop.
 
-Requirements are for Python version 3.9.13, please update if other versions are present. 
+> ⚙️ **Python Requirement:**  
+> Python version **3.9.13** is recommended. Please update requirements.txt if another version is installed.
 
-# Test Scripts
-test_eskin.py - Checks connectivity and prints mean fsr and acc values
-test_realsense.py - Checks camera connectivity and plots rgb and depth channels
-test_aruco_detection.py - Detects the aruco markers in rgb channel, can be used to set camera location
+---
 
-# Plot Scripts
-plot_kinesthetic_data.py - Plots the relative 6D pose of the eskin/tactile sensor
-plot_tactile_data.py - Real time plot of the FSR and Accelerometer
-plot_tactile_data_3D.py - Efficient and intuitive plot of the tactile data
+## 🧪 Test Scripts
 
-# Main scripts
-record_haptic_data.py - Records tactile and kinesthetic at different sampling rate and saves in .npy format
-plot_recorded_data.py - Plots the tactile (mean fsr, mean acc) and kinesthetic (position) information, 
-                        useful to evaluate experiment protocol, filtering, and pilot study 
+- `test_eskin.py`  
+  Checks connectivity and prints mean FSR and accelerometer values.
 
-haptic_discrimination.py (TODO) - Processes the data, computes features, and perform ML based classification
+- `test_realsense.py`  
+  Checks RealSense camera connectivity and plots RGB and depth channels.
+
+- `test_aruco_detection.py`  
+  Detects ArUco markers in the RGB feed. Can be used to determine the camera's pose or location.
+
+---
+
+## 📊 Plot Scripts
+
+- `plot_kinesthetic_data.py`  
+  Plots the relative 6D pose (translation + rotation) of the e-skin/tactile sensor.
+
+- `plot_tactile_data.py`  
+  Real-time visualization of FSR and accelerometer values.
+
+- `plot_tactile_data_3D.py`  
+  Efficient 3D visualization of tactile data — intuitive for spatiotemporal inspection.
+
+---
+
+## 🧵 Main Scripts
+
+- `record_haptic_data.py`  
+  Records both **tactile** and **kinesthetic** data streams (at different sampling rates)  
+  and saves them as `.npy` files for further analysis.
+
+- `plot_recorded_data.py`  
+  Visualizes recorded tactile data (mean FSR, mean ACC) and kinesthetic data (position).  
+  Useful for evaluating experiment protocol, filtering steps, and pilot study consistency.
+
+- `haptic_discrimination.py` *(TODO)*  
+  Processes the collected data, extracts features, and performs ML-based classification.
+
+---
 
