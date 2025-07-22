@@ -187,7 +187,7 @@ class RecordHapticData:
             "kinesthetic_data": kinesthetic_data,
             "sampling_rates": rates
         }
-        # TODO: rename and save data based on experimental protocol
+        # TODO: rename and save data based on experimental protocol, add object label if required
 
         out_name = f"recorded_data_{int(time.time())}.npy"
         np.save(out_name, out_data)
