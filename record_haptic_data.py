@@ -210,7 +210,7 @@ class RecordHapticData:
         print(f"[✅] Saved data to {out_name}")
         print(f"Sampling rates: {rates}")
 
-        visualize_data(show_plot=False)
+        visualize_data(out_name, show_plot=False)
 
 if __name__ == "__main__":
     recorder = RecordHapticData()
