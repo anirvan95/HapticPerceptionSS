@@ -9,12 +9,21 @@ import cv2
 import numpy as np
 from threading import Thread, Event
 from queue import Queue
-
+from plot_recorded_data import visualize_data
 
 class RecordHapticData:
     # Global variable definitions
     def __init__(self):
-        self.interaction_time = 10  # seconds
+        # Enter the object parameters
+        self.shape = "flat" # flat, convex, curve
+        self.letter = "D" # C, D, Q
+        self.stiffness = "soft" # soft, med, hard
+        # Enter rolling freq.
+        self.freq = "0.5" # 0.5, 1, 1.5, ..
+        self.iteration = str(1) #1, 2, 3...
+
+        self.interaction_time = 20  # seconds
+        self.baseline_time = 2
         self.port = 'COM9'
         self.marker_length = 0.05
         self.world_frame_id = 0
@@ -93,9 +102,6 @@ class RecordHapticData:
 
                     self.tactile_queue.put((ts, acc_float, fsr0, fsr1))
                     self.timestamps['tactile'].append(ts)
-
-
-
         except Exception as e:
             print(f"[Tactile] Error: {e}")
             self.running.clear()
@@ -151,7 +157,8 @@ class RecordHapticData:
 
     def record_data(self):
         input("[SYSTEM] Press ENTER to start recording...")
-        print(f"[SYSTEM] Recording for {self.interaction_time} seconds...")
+
+        self.running.set()
 
         thread1 = Thread(target=self.tactile_data_subscriber)
         thread2 = Thread(target=self.kinesis_data_subscriber)
@@ -159,6 +166,11 @@ class RecordHapticData:
         thread1.start()
         thread2.start()
 
+        print("[SYSTEM] Starting experiment - recording baseline data...")
+        time.sleep(self.baseline_time)
+        print("[SYSTEM] Baseline recorded. Starting motion capture...")
+
+        # Continue recording for total interaction time
         time.sleep(self.interaction_time)
         self.running.clear()
 
@@ -181,19 +193,24 @@ class RecordHapticData:
             "kinesthetic_Hz": estimate_rate(self.timestamps['kinesthetic'])
         }
 
+        gt_label = [self.letter, self.stiffness, self.shape, self.freq, self.iteration]
+
         # Save to file
         out_data = {
             "tactile_data": tactile_data,
             "kinesthetic_data": kinesthetic_data,
-            "sampling_rates": rates
+            "sampling_rates": rates,
+            "label":gt_label
         }
         # TODO: rename and save data based on experimental protocol, add object label if required
 
-        out_name = f"recorded_data_{int(time.time())}.npy"
+        out_name = f"dataset/{self.letter}_{self.stiffness}_{self.shape}_{self.freq}_{self.iteration}.npy"
+
         np.save(out_name, out_data)
         print(f"[✅] Saved data to {out_name}")
         print(f"Sampling rates: {rates}")
 
+        visualize_data(show_plot=False)
 
 if __name__ == "__main__":
     recorder = RecordHapticData()

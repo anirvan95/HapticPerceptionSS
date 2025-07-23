@@ -3,6 +3,8 @@ Code to plot the recorded data
 """
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.spatial.transform import Rotation as R
+
 
 def resample_filt(data, timestamps, new_timestamps):
     # This is mean filtering based resampling technique, can only work for downsampling,
@@ -31,12 +33,13 @@ def resample_filt(data, timestamps, new_timestamps):
     return np.array(resampled_data)
 
 
-def visualize_data(npy_file):
+def visualize_data(npy_file, show_plot=False):
     data = np.load(npy_file, allow_pickle=True).item()
 
     tactile_data = data["tactile_data"]
     kinesthetic_data = data["kinesthetic_data"]
     rates = data["sampling_rates"]
+    label = data["label"]
 
     # --- Extract and prepare tactile ---
     ts_tactile = np.array([t[0] - tactile_data[0][0] for t in tactile_data])
@@ -55,6 +58,9 @@ def visualize_data(npy_file):
     ts_kin = [k[0] - kinesthetic_data[0][0] for k in kinesthetic_data]
     poses = np.stack([k[1] for k in kinesthetic_data])
     positions = poses[:, :3, 3]
+    # Compute roll, pitch, yaw from rotation matrices
+    rotations = poses[:, :3, :3]
+    rpy = R.from_matrix(rotations).as_euler('xyz', degrees=True)  # shape (N, 3)
 
     # TODO: Use the resample function if required
     ts_target = np.arange(0, 10, 1 / 30)
@@ -63,7 +69,7 @@ def visualize_data(npy_file):
     # TODO: Evaluate different normalization techniques and see the effect
 
     # --- Plotting ---
-    fig, axs = plt.subplots(3, 1, figsize=(8, 6), sharex=True)
+    fig, axs = plt.subplots(4, 1, figsize=(10, 8), sharex=True)
 
     axs[0].plot(ts_tactile, fsr0_mean, label='FSR Layer 1')
     axs[0].plot(ts_tactile, fsr1_mean, label='FSR Layer 2')
@@ -83,12 +89,24 @@ def visualize_data(npy_file):
     axs[2].plot(ts_kin, positions[:, 1], label='Y')
     axs[2].plot(ts_kin, positions[:, 2], label='Z')
     axs[2].set_ylabel("Position (m)")
-    axs[2].set_xlabel("Time (s)")
     axs[2].set_title("Sensor Translation in World Frame")
     axs[2].legend()
 
+    axs[3].plot(ts_kin, rpy[:, 0], label='Roll (°)')
+    axs[3].plot(ts_kin, rpy[:, 1], label='Pitch (°)')
+    axs[3].plot(ts_kin, rpy[:, 2], label='Yaw (°)')
+    axs[3].set_ylabel("Angle (°)")
+    axs[3].set_xlabel("Time (s)")
+    axs[3].set_title("Sensor Orientation (Roll, Pitch, Yaw)")
+    axs[3].legend()
+
     plt.tight_layout()
-    plt.show()
+    if show_plot:
+        plt.show()
+    else:
+        filename = f"dump/{label[0]}_{label[1]}_{label[2]}_{label[3]}_{label[4]}.png"
+        plt.savefig(filename)
+
 
 
 if __name__ == "__main__":
@@ -99,4 +117,4 @@ if __name__ == "__main__":
 
     #visualize_data(args.file)
 
-    visualize_data('dataset/recorded_data_1753181472.npy')
+    visualize_data('dataset/pilot_study/D_soft_flat_1.npy', show_plot=True)
