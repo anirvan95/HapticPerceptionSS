@@ -104,7 +104,7 @@ acc_all = np.array(acc_all)              # (N, T, 16, 3)
 kinesthetic_all = np.array(kinesthetic_all)  # (N, T_kin, 3)
 
 # Make sure all have same length before chunking
-splits = 15
+splits = 10
 min_len = int(fsr0_all.shape[1]/splits)*splits
 fsr0_all = fsr0_all[:, :min_len]
 fsr1_all = fsr1_all[:, :min_len]
@@ -135,7 +135,7 @@ print("  ACC:", acc_final.shape)
 print("  KIN:", kinesthetic_final.shape)
 print(" Labels:", labels_chunked.shape)
 
-out_path = os.path.join('dataset', 'processed_data_15.npz')
+out_path = os.path.join('dataset', 'processed_data.npz')
 os.makedirs(os.path.dirname(out_path), exist_ok=True)
 np.savez_compressed(out_path,
                     fsr0=fsr0_final,
