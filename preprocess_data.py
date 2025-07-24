@@ -104,18 +104,20 @@ acc_all = np.array(acc_all)              # (N, T, 16, 3)
 kinesthetic_all = np.array(kinesthetic_all)  # (N, T_kin, 3)
 
 # Make sure all have same length before chunking
-min_len = 11110
+splits = 15
+min_len = int(fsr0_all.shape[1]/splits)*splits
 fsr0_all = fsr0_all[:, :min_len]
 fsr1_all = fsr1_all[:, :min_len]
 acc_all = acc_all[:, :min_len]
-kinesthetic_all = kinesthetic_all[:, :500]
+min_len = int(kinesthetic_all.shape[1]/splits)*splits
+kinesthetic_all = kinesthetic_all[:, :min_len]
 
 # --- Chunking each into 10 equal time segments along time axis ---
-fsr0_chunks = np.array_split(fsr0_all, 10, axis=1)  # → 10 chunks, shape (N, ~T/10, 16, 16)
-fsr1_chunks = np.array_split(fsr1_all, 10, axis=1)
-acc_chunks = np.array_split(acc_all, 10, axis=1)
-kinesthetic_chunks = np.array_split(kinesthetic_all, 10, axis=1)
-labels_chunked = np.repeat(np.array(label_all), repeats=10, axis=0)   # shape: (10 * N,)
+fsr0_chunks = np.array_split(fsr0_all, splits, axis=1)  # → 10 chunks, shape (N, ~T/10, 16, 16)
+fsr1_chunks = np.array_split(fsr1_all, splits, axis=1)
+acc_chunks = np.array_split(acc_all, splits, axis=1)
+kinesthetic_chunks = np.array_split(kinesthetic_all, splits, axis=1)
+labels_chunked = np.repeat(np.array(label_all), repeats=splits, axis=0)   # shape: (10 * N,)
 
 # Combine each chunk along batch axis
 fsr0_final = np.concatenate(fsr0_chunks, axis=0)        # shape: (10*N, T/10, 16, 16)
@@ -133,7 +135,7 @@ print("  ACC:", acc_final.shape)
 print("  KIN:", kinesthetic_final.shape)
 print(" Labels:", labels_chunked.shape)
 
-out_path = os.path.join('dataset', 'processed_data.npz')
+out_path = os.path.join('dataset', 'processed_data_15.npz')
 os.makedirs(os.path.dirname(out_path), exist_ok=True)
 np.savez_compressed(out_path,
                     fsr0=fsr0_final,

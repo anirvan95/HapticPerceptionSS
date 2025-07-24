@@ -43,8 +43,16 @@ Code base for the Haptic Perception Workshop.
   Visualizes recorded tactile data (mean FSR, mean ACC) and kinesthetic data (position).  
   Useful for evaluating experiment protocol, filtering steps, and pilot study consistency.
 
-- `haptic_discrimination.py` *(TODO)*  
-  Processes the collected data, extracts features, and performs ML-based classification.
+- `preprocess.py` 
+  Processes the collected data, splits
 
+- `feature_extraction.py`
+  Extracts features
+
+- `evaluate_classifier.py`
+  Performs ML Classification
+
+- `plot_bar_plot.py`
+  Plots main result
 ---
 
